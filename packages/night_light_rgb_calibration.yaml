@@ -7,9 +7,12 @@
 # Assistant number entity to scale that brightness down (or up) live,
 # without reflashing.
 #
-# 100% keeps the original measured brightness. Lower values make the RGB
-# night light dimmer; the interesting range for a barely-there glow is
-# typically well below 25%. The value is restored across reboots.
+# 100% keeps the original measured brightness. Values ABOVE 100% make the
+# RGB night light brighter and values below make it dimmer. Because a
+# single-channel color (e.g. pure red) is very faint at the stock 100%
+# level, expect to go above 100% to reach a visible-but-dim glow. The
+# value is restored across reboots. The multiplier is clamped to 4.0 (400%)
+# in the component.
 #
 # Note: this only affects the RGB night light. The white (color
 # temperature) night light is tuned via night_light_calibration.yaml.
@@ -33,8 +36,9 @@ script:
           if (isnan(id(my_night_light_rgb_level).state)) {
             return;
           }
-          id(my_light).set_night_light_rgb_brightness(
-            id(my_night_light_rgb_level).state / 100.0f);
+          float mult = id(my_night_light_rgb_level).state / 100.0f;
+          ESP_LOGD("night_light_rgb", "Applying RGB night light multiplier: %.2f", mult);
+          id(my_light).set_night_light_rgb_brightness(mult);
 
 number:
   - platform: template
@@ -46,9 +50,9 @@ number:
     optimistic: true
     restore_value: true
     unit_of_measurement: "%"
-    min_value: 1
-    max_value: 100
-    step: 1
+    min_value: 0
+    max_value: 400
+    step: 5
     initial_value: ${night_light_rgb_level_initial}
     on_value:
       then:
