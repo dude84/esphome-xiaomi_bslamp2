@@ -20,7 +20,10 @@
 
 substitutions:
   night_light_rgb_level_name: Night Light Brightness (RGB)
-  night_light_rgb_level_initial: "100"
+  # Default level on a fresh device (before the user adjusts it). 100% is the
+  # stock, very faint night light; 185% is a good visible-but-dim single-colour
+  # (e.g. red) nursery glow.
+  night_light_rgb_level_initial: "185"
 
 esphome:
   on_boot:
