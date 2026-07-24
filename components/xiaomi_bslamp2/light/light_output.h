@@ -23,6 +23,14 @@ class XiaomiBslamp2LightOutput : public Component, public light::LightOutput {
  public:
   void set_parent(LightHAL *light) { light_ = light; }
 
+  /**
+   * Registers the light state that owns this output. This gives the output a
+   * reliable reference to re-render the current light state on demand (e.g.
+   * after a calibration change), even when the state was last driven through
+   * the transition transformer instead of write_state().
+   */
+  void set_light_state(light::LightState *state) { state_ = state; }
+
   void set_night_light_color_temperature_calibration(float red, float green, float blue) {
     night_light_calibration_ = {red, green, blue};
     color_handler_chain.set_night_light_color_temperature_calibration(night_light_calibration_);
