@@ -43,6 +43,18 @@ class ColorHandlerNightLight : public ColorHandler {
     set_color_temperature_calibration({red, green, blue});
   }
 
+  /**
+   * Sets a brightness multiplier for the RGB night light. The multiplier is
+   * applied in "drive space" (1.0 - duty), where a larger drive means a
+   * brighter channel. A value of 1.0 keeps the original (measured) brightness,
+   * values below 1.0 make the RGB night light dimmer and values above 1.0
+   * make it brighter. This allows dimming the RGB night light well below the
+   * default floor, e.g. for a very faint red glow in a nursery.
+   */
+  void set_rgb_brightness(float brightness) {
+    rgb_brightness_ = clamp(brightness, 0.0f, 4.0f);
+  }
+
   bool set_light_color_values(light::LightColorValues v) {
     light_mode = LIGHT_MODE_NIGHT;
 
@@ -65,11 +77,16 @@ class ColorHandlerNightLight : public ColorHandler {
     // specific color, instead of the default. This is a nice extra for
     // this firmware, as the original firmware does not support it.
     else {
-      red = std::lerp(0.9997f, 0.9680f, v.get_red());
-      green = std::lerp(0.9997f, 0.9680f, v.get_green());
+      // Compute the measured duty cycles, then apply the RGB brightness
+      // multiplier in drive space (1.0 - duty). Scaling the drive keeps the
+      // color balance intact while making the glow dimmer or brighter. The
+      // result is clamped to a valid duty cycle range.
+      const float m = rgb_brightness_;
       auto blue_scale = (v.get_red() + v.get_green()) / 2.0f;
       auto blue_max = std::lerp(0.9640f, 0.9720f, blue_scale);
-      blue = std::lerp(0.9997f, blue_max, v.get_blue());
+      red = clamp(1.0f - (1.0f - std::lerp(0.9997f, 0.9680f, v.get_red())) * m, 0.0f, 1.0f);
+      green = clamp(1.0f - (1.0f - std::lerp(0.9997f, 0.9680f, v.get_green())) * m, 0.0f, 1.0f);
+      blue = clamp(1.0f - (1.0f - std::lerp(0.9997f, blue_max, v.get_blue())) * m, 0.0f, 1.0f);
       white = 0.0f;
     }
 
@@ -78,6 +95,7 @@ class ColorHandlerNightLight : public ColorHandler {
 
  protected:
   NightLightCalibration color_temperature_calibration_{DEFAULT_NIGHT_LIGHT_CALIBRATION};
+  float rgb_brightness_{1.0f};
 };
 
 }  // namespace bslamp2

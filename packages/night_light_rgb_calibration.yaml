@@ -1,0 +1,55 @@
+# ------------------------------------------------------------------------
+# RGB night light brightness calibration
+#
+# The RGB night light (a colored glow at the lowest brightness, e.g. a
+# faint red for a nursery) operates at a fixed, measured brightness that
+# is often still too bright for a dark room. This package exposes a Home
+# Assistant number entity to scale that brightness down (or up) live,
+# without reflashing.
+#
+# 100% keeps the original measured brightness. Lower values make the RGB
+# night light dimmer; the interesting range for a barely-there glow is
+# typically well below 25%. The value is restored across reboots.
+#
+# Note: this only affects the RGB night light. The white (color
+# temperature) night light is tuned via night_light_calibration.yaml.
+# ------------------------------------------------------------------------
+
+substitutions:
+  night_light_rgb_level_name: Night Light Brightness (RGB)
+  night_light_rgb_level_initial: "100"
+
+esphome:
+  on_boot:
+    - priority: 600
+      then:
+        - script.execute: apply_night_light_rgb_brightness
+
+script:
+  - id: apply_night_light_rgb_brightness
+    mode: restart
+    then:
+      - lambda: |-
+          if (isnan(id(my_night_light_rgb_level).state)) {
+            return;
+          }
+          id(my_light).set_night_light_rgb_brightness(
+            id(my_night_light_rgb_level).state / 100.0f);
+
+number:
+  - platform: template
+    id: my_night_light_rgb_level
+    name: ${night_light_rgb_level_name}
+    icon: mdi:brightness-5
+    entity_category: config
+    mode: slider
+    optimistic: true
+    restore_value: true
+    unit_of_measurement: "%"
+    min_value: 1
+    max_value: 100
+    step: 1
+    initial_value: ${night_light_rgb_level_initial}
+    on_value:
+      then:
+        - script.execute: apply_night_light_rgb_brightness

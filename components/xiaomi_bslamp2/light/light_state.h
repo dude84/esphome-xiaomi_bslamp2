@@ -53,6 +53,11 @@ class XiaomiBslamp2LightState : public light::LightState, public LightStateDisco
     output->set_night_light_color_temperature_calibration(red, green, blue);
   }
 
+  void set_night_light_rgb_brightness(float brightness) {
+    auto *output = static_cast<XiaomiBslamp2LightOutput *>(this->output_);
+    output->set_night_light_rgb_brightness(brightness);
+  }
+
   light::LightCall make_disco_call(bool save_and_publish) {
     auto call = this->make_call();
     call.set_save(save_and_publish);

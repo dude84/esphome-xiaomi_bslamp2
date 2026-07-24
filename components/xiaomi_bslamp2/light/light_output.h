@@ -29,6 +29,12 @@ class XiaomiBslamp2LightOutput : public Component, public light::LightOutput {
     apply_current_state();
   }
 
+  void set_night_light_rgb_brightness(float brightness) {
+    night_light_rgb_brightness_ = brightness;
+    color_handler_chain.set_night_light_rgb_brightness(night_light_rgb_brightness_);
+    apply_current_state();
+  }
+
   /**
    * Returns a LightTraits object, which is used to explain to the outside
    * world (e.g. Home Assistant) what features are supported by this device.
@@ -46,7 +52,8 @@ class XiaomiBslamp2LightOutput : public Component, public light::LightOutput {
       light_,
       &light_mode_callback_,
       &state_callback_,
-      night_light_calibration_);
+      night_light_calibration_,
+      night_light_rgb_brightness_);
   }
 
   void add_on_light_mode_callback(std::function<void(std::string)> &&callback) {
@@ -95,6 +102,7 @@ class XiaomiBslamp2LightOutput : public Component, public light::LightOutput {
   CallbackManager<void(std::string)> light_mode_callback_{};
   CallbackManager<void(light::LightColorValues)> state_callback_{};
   NightLightCalibration night_light_calibration_{DEFAULT_NIGHT_LIGHT_CALIBRATION};
+  float night_light_rgb_brightness_{1.0f};
 };
 
 }  // namespace bslamp2

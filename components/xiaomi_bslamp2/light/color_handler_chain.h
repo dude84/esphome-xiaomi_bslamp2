@@ -35,6 +35,10 @@ class ColorHandlerChain : public ColorHandler {
     set_night_light_color_temperature_calibration({red, green, blue});
   }
 
+  void set_night_light_rgb_brightness(float brightness) {
+    night_light_.set_rgb_brightness(brightness);
+  }
+
   bool set_light_color_values(light::LightColorValues v) {
     // The actual implementation of the various light modes is in separate
     // targeted classes. These classes are called here in a chain of

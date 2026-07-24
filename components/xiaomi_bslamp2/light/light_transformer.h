@@ -19,11 +19,13 @@ class XiaomiBslamp2LightTransitionTransformer : public light::LightTransitionTra
     LightHAL *light,
     CallbackManager<void(std::string)> *light_mode_callback,
     CallbackManager<void(light::LightColorValues)> *state_callback,
-    NightLightCalibration night_light_calibration) :
+    NightLightCalibration night_light_calibration,
+    float night_light_rgb_brightness) :
       light_(light),
       light_mode_callback_(light_mode_callback),
       state_callback_(state_callback),
-      night_light_calibration_(night_light_calibration) { }
+      night_light_calibration_(night_light_calibration),
+      night_light_rgb_brightness_(night_light_rgb_brightness) { }
 
   bool is_finished() override {
       return force_finish_ || get_progress_() >= 1.0f;
@@ -34,6 +36,7 @@ class XiaomiBslamp2LightTransitionTransformer : public light::LightTransitionTra
     // This light transition transformer will then transition linearly between them.
     light_->copy_to(&start_);
     end_.set_night_light_color_temperature_calibration(night_light_calibration_);
+    end_.set_night_light_rgb_brightness(night_light_rgb_brightness_);
     end_.set_light_color_values(target_values_);
 
     // Update the light mode of the light HAL to the target state, unless
@@ -102,6 +105,7 @@ class XiaomiBslamp2LightTransitionTransformer : public light::LightTransitionTra
   CallbackManager<void(std::string)> *light_mode_callback_;
   CallbackManager<void(light::LightColorValues)> *state_callback_;
   NightLightCalibration night_light_calibration_;
+  float night_light_rgb_brightness_;
 };
 
 }  // namespace bslamp2
