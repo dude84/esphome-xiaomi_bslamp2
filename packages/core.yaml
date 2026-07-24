@@ -36,11 +36,14 @@ esp32:
       ignore_efuse_mac_crc: true
 
 # Retrieve the code for the xiaomi_bslamp2 platform from GitHub.
+# This points at the dude84 fork (not upstream mmakaay), because the fork
+# carries the custom RGB night light brightness control. Track upstream by
+# changing the url/ref back to mmakaay if the fork is ever retired.
 external_components:
   - source:
       type: git
-      url: https://github.com/mmakaay/esphome-xiaomi_bslamp2
-      ref: release/2026.5.0
+      url: https://github.com/dude84/esphome-xiaomi_bslamp2
+      ref: dev
     refresh: 60s
 
 # Disable the reboot timeout. By default, the lamp reboots after 15
