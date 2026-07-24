@@ -21,6 +21,13 @@
 # behavior that I want: when you touch the front panel slider at 75%, then
 # the illumination rises directly to that level, while the light might do
 # a smooth transition.
+# Front panel behavior in night light mode. By default the power button is
+# illuminated as a subtle "the lamp is on" indicator. Set night_light_power_led
+# to "false" (e.g. in your device substitutions) for a completely dark night
+# light, which is nicer in a bedroom or nursery.
+substitutions:
+  night_light_power_led: "true"
+
 globals:
   - id: current_brightness
     type: float
@@ -54,7 +61,11 @@ script:
                 id: my_light_mode
                 state: night
           then:
-            - front_panel.turn_on_leds: [ POWER ]
+            - if:
+                condition:
+                  lambda: 'return std::string("${night_light_power_led}") == "true";'
+                then:
+                  - front_panel.turn_on_leds: [ POWER ]
       - front_panel.update_leds:
 
 # This component controls the LED lights of the lamp.
