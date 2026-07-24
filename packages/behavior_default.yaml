@@ -21,12 +21,13 @@
 # behavior that I want: when you touch the front panel slider at 75%, then
 # the illumination rises directly to that level, while the light might do
 # a smooth transition.
-# Front panel behavior in night light mode. By default the power button is
-# illuminated as a subtle "the lamp is on" indicator. Set night_light_power_led
-# to "false" (e.g. in your device substitutions) for a completely dark night
-# light, which is nicer in a bedroom or nursery.
+# Front panel behavior in night light mode. Default is a completely dark
+# night light (nothing on the front panel lit), which is nicer in a bedroom
+# or nursery. Set night_light_power_led to "true" (e.g. in your device
+# substitutions) to illuminate the power button as a subtle "lamp is on"
+# indicator, which is the stock upstream behavior.
 substitutions:
-  night_light_power_led: "true"
+  night_light_power_led: "false"
 
 globals:
   - id: current_brightness
