@@ -17,12 +17,7 @@ namespace bslamp2 {
  */
 class XiaomiBslamp2LightState : public light::LightState, public LightStateDiscoSupport {
  public:
-  XiaomiBslamp2LightState(XiaomiBslamp2LightOutput *output) : light::LightState(output) {
-    // Give the output a back-reference to this state, so it can re-render the
-    // current light values on demand (e.g. when a night light calibration
-    // changes), independent of whether write_state() has run yet.
-    output->set_light_state(this);
-  }
+  XiaomiBslamp2LightState(XiaomiBslamp2LightOutput *output) : light::LightState(output) { }
 
   void disco_stop() {
     light::LightStateRTCState recovered{};

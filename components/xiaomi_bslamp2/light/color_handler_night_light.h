@@ -88,8 +88,6 @@ class ColorHandlerNightLight : public ColorHandler {
       green = clamp(1.0f - (1.0f - std::lerp(0.9997f, 0.9680f, v.get_green())) * m, 0.0f, 1.0f);
       blue = clamp(1.0f - (1.0f - std::lerp(0.9997f, blue_max, v.get_blue())) * m, 0.0f, 1.0f);
       white = 0.0f;
-      ESP_LOGD(TAG, "Night light RGB: in=[%.3f,%.3f,%.3f] br=%.4f mult=%.2f -> duty=[%.4f,%.4f,%.4f] (drive red=%.4f)",
-               v.get_red(), v.get_green(), v.get_blue(), v.get_brightness(), m, red, green, blue, 1.0f - red);
     }
 
     return true;

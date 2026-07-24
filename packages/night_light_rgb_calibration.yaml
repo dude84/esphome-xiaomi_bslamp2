@@ -32,13 +32,26 @@ script:
   - id: apply_night_light_rgb_brightness
     mode: restart
     then:
+      # Store the new multiplier in the light component. This takes effect on
+      # the next render of the light state.
       - lambda: |-
           if (isnan(id(my_night_light_rgb_level).state)) {
             return;
           }
-          float mult = id(my_night_light_rgb_level).state / 100.0f;
-          ESP_LOGD("night_light_rgb", "Applying RGB night light multiplier: %.2f", mult);
-          id(my_light).set_night_light_rgb_brightness(mult);
+          id(my_light).set_night_light_rgb_brightness(
+            id(my_night_light_rgb_level).state / 100.0f);
+      # Re-render the current light state through the normal light pipeline, so
+      # the change is visible immediately while the night light is already on.
+      # This is only done when the light is on, to avoid switching it on. Using
+      # a light call (instead of a direct output write) keeps the light state
+      # machine in sync, which is important to not get stuck in night mode.
+      - if:
+          condition:
+            - light.is_on: my_light
+          then:
+            - light.turn_on:
+                id: my_light
+                transition_length: 0s
 
 number:
   - platform: template
